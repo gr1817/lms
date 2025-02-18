@@ -11,6 +11,15 @@ pipeline {
                 sh 'cd webapp && npm install && npm run build'
             }
         }
+        stage('Publish LMS') {
+           steps {
+               script {
+                   def packageJson = readJSON file: 'webapp/package.json'
+                   def packageJSONVersion = packageJson.version
+                   echo "${packageJSONVersion}"
+               }
+           }
+       }
         stage('Clean Up') {
             steps {
                 cleanWs()
