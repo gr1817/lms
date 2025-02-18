@@ -11,7 +11,7 @@ pipeline {
                 sh 'cd webapp && npm install && npm run build'
             }
         }
-        stage('Clean up') {
+        stage('Clean Up') {
             steps {
                 cleanWs()
             }
