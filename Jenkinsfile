@@ -12,29 +12,32 @@ pipeline {
             }
         }
         stage('Publish LMS') {
-           steps {
-               script {
-                   def packageJson = readJSON file: 'webapp/package.json'
-                   def packageJSONVersion = packageJson.version
-                   echo "${packageJSONVersion}"
-                   sh "zip webapp/lms-${packageJSONVersion}.zip -r webapp/dist"
-                   sh "curl -v -u admin:Gopirajuyadala@78 --upload-file webapp/lms-${packageJSONVersion}.zip http://34.220.107.216:8081//repository/lms/"
-               }
-           }
-       }
-       stage('Deploy LMS') {
-           steps {
-               script {
-                   def packageJson = readJSON file: 'webapp/package.json'
-                   def packageJSONVersion = packageJson.version
-                   echo "${packageJSONVersion}"
-                   sh "curl -u admin:Gopirajuyadala@78 -X GET \'http://34.220.107.216:8081/repository/lms/lms-${packageJSONVersion}.zip\' --output lms-'${packageJSONVersion}'.zip"
-                   sh 'sudo rm -rf /var/www/html/*'
-                   sh "sudo unzip -o lms-'${packageJSONVersion}'.zip"
-                   sh "sudo cp -r webapp/dist/* /var/www/html"
-               }
-           }
-       }
+            steps {
+                script {
+                    def packageJson = readJSON file: 'webapp/package.json'
+                    def packageJSONVersion = packageJson.version
+                    echo "${packageJSONVersion}"
+                    sh "zip webapp/lms-${packageJSONVersion}.zip -r webapp/dist"
+                    // Try with POST or -F for file upload
+                    sh "curl -v -u admin:Gopirajuyadala@78 -F \"file=@webapp/lms-${packageJSONVersion}.zip\" http://34.220.107.216:8081/repository/lms/"
+                }
+            }
+        }
+        stage('Deploy LMS') {
+            steps {
+                script {
+                    def packageJson = readJSON file: 'webapp/package.json'
+                    def packageJSONVersion = packageJson.version
+                    echo "${packageJSONVersion}"
+                    // Download and check if the file is a valid zip file
+                    sh "curl -u admin:Gopirajuyadala@78 -X GET 'http://34.220.107.216:8081/repository/lms/lms-${packageJSONVersion}.zip' --output lms-${packageJSONVersion}.zip"
+                    // Verify file before unzipping
+                    sh "if [ -f lms-${packageJSONVersion}.zip ]; then unzip -o lms-${packageJSONVersion}.zip; else echo 'File is missing or not a valid zip'; fi"
+                    sh "sudo rm -rf /var/www/html/*"
+                    sh "sudo cp -r webapp/dist/* /var/www/html"
+                }
+            }
+        }
 
         stage('Clean Up') {
             steps {
