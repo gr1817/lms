@@ -8,12 +8,12 @@ pipeline {
         }
         stage('Test') {
             steps {
-                //
+                sh 'uname'
             }
         }
         stage('Deploy') {
             steps {
-                //
+                sh 'free -m'
             }
         }
     }
