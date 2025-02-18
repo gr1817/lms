@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Code quality') {
             steps {
-                sh 'cd webapp && sudo docker run --rm -e SONAR_HOST_URL="http://34.220.107.216:9000/" -v ".:/usr/src" -e SONAR_TOKEN="sqa_d6d5b683013b8c5c009a3076122fdecab8d9f52c" sonarsource/sonar-scanner-cli -Dsonar.projectKey=lms'
+                sh 'cd webapp && sudo docker run --rm -e SONAR_HOST_URL="http://35.92.58.82:9000/" -v ".:/usr/src" -e SONAR_TOKEN="sqa_d6d5b683013b8c5c009a3076122fdecab8d9f52c" sonarsource/sonar-scanner-cli -Dsonar.projectKey=lms'
             }
         }
         stage('Build') {
@@ -18,7 +18,7 @@ pipeline {
                    def packageJSONVersion = packageJson.version
                    echo "${packageJSONVersion}"
                    sh "zip webapp/lms-${packageJSONVersion}.zip -r webapp/dist"
-                   sh "curl -v -u admin:Gopirajuyadala@78 --upload-file webapp/lms-${packageJSONVersion}.zip http://34.220.107.216:8081//repository/lms/"
+                   sh "curl -v -u admin:Gopirajuyadala@78 --upload-file webapp/lms-${packageJSONVersion}.zip http://35.92.58.82:8081//repository/lms/"
                }
            }
        }
